@@ -1,0 +1,10 @@
+Iframe_StreetView = 
+VAR UrlActual = SELECTEDVALUE('Base de datos principal'[StreetView_URL], MAX('Base de datos principal'[StreetView_URL]))
+RETURN
+IF(
+    NOT(ISBLANK(UrlActual)),
+    "<div style='position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex;'>
+        <iframe src='" & UrlActual & "' style='width: 100%; height: 100%; border: none; flex-grow: 1;' allowfullscreen='' loading='lazy'></iframe>
+     </div>",
+    "<div style='font-family: sans-serif; text-align: center; padding-top: 20px; color: #333;'>Por favor selecciona un inmueble en el mapa o gráfica.</div>"
+)
