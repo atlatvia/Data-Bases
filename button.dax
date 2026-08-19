@@ -1,0 +1,1 @@
+URL_Boton = SELECTEDVALUE('Base de datos principal'[URL de consulta], "")
