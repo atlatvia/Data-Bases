@@ -1,0 +1,37 @@
+// Crea columna bajo el nombre de predicción
+Predicción = CALCULATE(
+  AVERAGE('Base de datos principal'[Precio por metro cuadrado]),
+  FILTER('Base de datos principal', 
+    'Base de datos principal'[Tipo de inmueble] = 
+    EARLIER('Base de datos principal'[Tipo de inmueble])
+  )
+) 
+* 'Base de datos principal'[Área total en metros cuadrados]
+
+
+// Crea columna bajo el nombre de error en predicción
+Error en predicción = IFERROR(ABS('Base de datos principal'[Precio] - [Predicción]) / 'Base de datos principal'[Precio], 0)
+
+// Crea columna de la regresíon lineal
+Regresión lineal = VAR Pendiente = 
+CALCULATE(
+    SUMX('Base de datos principal', 
+      ('Base de datos principal'[Área total en metros cuadrados] - 
+      AVERAGE('Base de datos principal'[Área total en metros cuadrados])) *
+      ('Base de datos principal'[Precio] - AVERAGE('Base de datos principal'[Precio]))
+    ) /
+    CALCULATE(
+      SUMX('Base de datos principal',
+        ('Base de datos principal'[Área total en metros cuadrados] - AVERAGE('Base de datos principal'[Área total en metros cuadrados])) ^ 2
+      )
+    )
+  )
+VAR Intercepcion = AVERAGE('Base de datos principal'[Precio]) - Pendiente * AVERAGE('Base de datos principal'[Área total en metros cuadrados])
+RETURN
+Pendiente * [Área total en metros cuadrados] + Intercepcion
+
+// Crea columna para saber conocer la oportunidad 
+Oportunidad = IF([Error en predicción] < 0.20, IF([Precio] < [Predicción], "Ganga", "Justo"), "Cuidado")
+
+// Crea columna de diferencia
+Diferencia = [Predicción]-[Precio] 
